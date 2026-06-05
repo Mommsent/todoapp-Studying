@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/Mommsent/todoapp-Studying.git/internal/core/domain"
+	core_http_middleware "github.com/Mommsent/todoapp-Studying.git/internal/core/transport/http/middleware"
 	core_http_server "github.com/Mommsent/todoapp-Studying.git/internal/core/transport/http/server"
 )
 
@@ -37,6 +38,9 @@ func (handler *UsersHTTPHandler) Routes() []core_http_server.Route {
 			Method:  http.MethodGet,
 			Path:    "/users",
 			Handler: handler.GetUsers,
+			Middleware: []core_http_middleware.Middleware{
+				core_http_middleware.Dummy("get users middleware"),
+			},
 		},
 		{
 			Method:  http.MethodGet,
@@ -47,11 +51,6 @@ func (handler *UsersHTTPHandler) Routes() []core_http_server.Route {
 			Method:  http.MethodDelete,
 			Path:    "/users/{id}",
 			Handler: handler.DeleteUser,
-		},
-		{
-			Method:  http.MethodPatch,
-			Path:    "/users/{id}",
-			Handler: handler.PatchUser,
 		},
 		{
 			Method:  http.MethodPatch,

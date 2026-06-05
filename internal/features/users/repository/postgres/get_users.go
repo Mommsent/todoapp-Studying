@@ -17,7 +17,7 @@ func (r *UsersRepository) GetUsers(ctx context.Context, limit, offset *int,
 	FROM todoapp.users
 	ORDER BY id ASC
 	LIMIT $1
-	OFFSET $2
+	OFFSET $2;
 	`
 
 	rows, err := r.pool.Query(
