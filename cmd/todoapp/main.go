@@ -8,10 +8,14 @@ import (
 	"syscall"
 	"time"
 
+	core_config "github.com/Mommsent/todoapp-Studying.git/internal/core/config"
 	core_logger "github.com/Mommsent/todoapp-Studying.git/internal/core/logger"
 	core_pgx_pool "github.com/Mommsent/todoapp-Studying.git/internal/core/repository/postgres/pool/pgx"
 	core_http_middleware "github.com/Mommsent/todoapp-Studying.git/internal/core/transport/http/middleware"
 	core_http_server "github.com/Mommsent/todoapp-Studying.git/internal/core/transport/http/server"
+	statistics_postgres_repository "github.com/Mommsent/todoapp-Studying.git/internal/features/statistics/repository/postgres"
+	statistics_service "github.com/Mommsent/todoapp-Studying.git/internal/features/statistics/service"
+	statistics_transport_http "github.com/Mommsent/todoapp-Studying.git/internal/features/statistics/transport/http"
 	tasks_postgres_repository "github.com/Mommsent/todoapp-Studying.git/internal/features/tasks/repository/postgres"
 	tasks_service "github.com/Mommsent/todoapp-Studying.git/internal/features/tasks/service"
 	tasks_transport_http "github.com/Mommsent/todoapp-Studying.git/internal/features/tasks/transport/http"
@@ -21,13 +25,10 @@ import (
 	"go.uber.org/zap"
 )
 
-var (
-	timeZone = time.UTC
-)
-
 func main() {
 
-	time.Local = timeZone
+	cfg := core_config.NewConfigMust()
+	time.Local = cfg.TimeZone
 
 	ctx, cancel := signal.NotifyContext(
 		context.Background(),
@@ -43,7 +44,7 @@ func main() {
 	}
 	defer logger.Close()
 
-	logger.Debug("application time zone", zap.Any("zone", timeZone))
+	logger.Debug("application time zone", zap.Any("zone", time.Local))
 	logger.Debug("Initializing postgres connection pool")
 
 	pool, err := core_pgx_pool.NewPool(
@@ -65,6 +66,11 @@ func main() {
 	tasksService := tasks_service.NewTasksService(tasksRepository)
 	tasksTransportHTTP := tasks_transport_http.NewTasksHTTPHandler(tasksService)
 
+	logger.Debug("initializing feature", zap.String("feature", "statistics"))
+	statisticsRepository := statistics_postgres_repository.NewStatisticsRepository(pool)
+	statisticsService := statistics_service.NewStatisticsService(statisticsRepository)
+	statisticsTransportHTTP := statistics_transport_http.NewStatisticsHTTPHandler(statisticsService)
+
 	logger.Debug("Initialize HTTP server")
 	servConfig := core_http_server.NewConfigMust()
 	httpServer := core_http_server.NewHTTPServer(
@@ -78,6 +84,7 @@ func main() {
 	apiVersionRouterV1 := core_http_server.NewAPIVersionRouter(core_http_server.APIVersion1)
 	apiVersionRouterV1.RegisterRoutes(usersTransportHTTP.Routes()...)
 	apiVersionRouterV1.RegisterRoutes(tasksTransportHTTP.Routes()...)
+	apiVersionRouterV1.RegisterRoutes(statisticsTransportHTTP.Routes()...)
 
 	apiVersionRouterV2 := core_http_server.NewAPIVersionRouter(
 		core_http_server.APIVersion2,
@@ -85,6 +92,7 @@ func main() {
 	)
 	apiVersionRouterV2.RegisterRoutes(usersTransportHTTP.Routes()...)
 	apiVersionRouterV2.RegisterRoutes(tasksTransportHTTP.Routes()...)
+	apiVersionRouterV2.RegisterRoutes(statisticsTransportHTTP.Routes()...)
 
 	httpServer.RegisterAPIRouters(
 		apiVersionRouterV1,
