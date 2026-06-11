@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Задачи</title>
+
+    <style>
+        :root {
+            --bg: #0f1117;
+            --surface: #1a1d26;
+            --surface-hover: #242938;
+            --text: #e6e9ef;
+            --text-muted: #9aa4b2;
+            --accent: #6ea8fe;
+            --border: #2d3340;
+            --radius: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: Inter, Segoe UI, sans-serif;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            margin-bottom: 1rem;
+        }
+
+        button {
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            filter: brightness(1.1);
+        }
+
+        #users-list {
+            list-style: none;
+            margin-top: 1.5rem;
+        }
+
+        #users-list li {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            transition: 0.2s;
+        }
+
+        #users-list li:hover {
+            background: var(--surface-hover);
+        }
+
+        .user-id {
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        .user-name {
+            color: var(--text);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Пользователи</h1>
+
+        <button onclick="loadUsers()">
+            Получить список пользователей
+        </button>
+
+        <ul id="users-list"></ul>
+    </div>
+
+    <script>
+        async function loadUsers() {
+            try {
+                const response = await fetch(
+                    "http://127.0.0.1:5050/api/v1/users"
+                );
+
+                const users = await response.json();
+
+                const list = document.getElementById("users-list");
+
+                list.innerHTML = users
+                    .map(user => `
+                        <li>
+                            <span class="user-id">#${user.id}</span>
+                            —
+                            <span class="user-name">${user.full_name}</span>
+                        </li>
+                    `)
+                    .join("");
+            }
+            catch (error) {
+                console.error(error);
+                alert("Ошибка загрузки пользователей");
+            }
+        }
+    </script>
+</body>
+</html>

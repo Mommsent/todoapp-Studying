@@ -43,6 +43,14 @@ func (httpServer *HTTPServer) RegisterAPIRouters(routers ...*APIVersionRouter) {
 	}
 }
 
+func (httpServer *HTTPServer) RegisterRoutes(routes ...Route) {
+	for _, route := range routes {
+		pattern := fmt.Sprintf("%s %s", route.Method, route.Path)
+
+		httpServer.mux.Handle(pattern, route.WithMiddleware())
+	}
+}
+
 func (HTTPServer *HTTPServer) RegisterSwagger() {
 	HTTPServer.mux.Handle(
 		"/swagger/",

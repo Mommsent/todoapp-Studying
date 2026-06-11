@@ -30,6 +30,15 @@ func (handler *HTTPResponseHandler) JSONResponse(responseBody any, statusCode in
 	}
 }
 
+func (handler *HTTPResponseHandler) HTMLResponse(html []byte) {
+	handler.responseWriter.WriteHeader(http.StatusOK)
+
+	handler.responseWriter.Header().Set("Content-Type", "text/html; charset=utf-8")
+	if _, err := handler.responseWriter.Write(html); err != nil {
+		handler.log.Error("write HTML HTTP response: ", zap.Error(err))
+	}
+}
+
 func (handler *HTTPResponseHandler) NoContentResponse() {
 	handler.responseWriter.WriteHeader(http.StatusNoContent)
 }

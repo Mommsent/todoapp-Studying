@@ -18,7 +18,7 @@ type GetTasksResponse []TaskDTOResponse
 // @Produce 	json
 // @Param       user_id query int false "Фильтрация задач по ID автора"
 // @Param       limit query int false "Размер страницы с задачами"
-// @Param       offset quey int false "Смещение страницы с задачами"
+// @Param       offset query int false "Смещение страницы с задачами"
 // @Success 	200 {object} GetTasksResponse "Успешное получение списка задач"
 // @Failure 	400 {object} core_http_response.ErrorResponse "Bad request"
 // @Failure 	500 {object} core_http_response.ErrorResponse "Internal server error"

@@ -17,7 +17,7 @@ type GetUsersResponse []UserDTOResponse
 // @Tags 		users
 // @Produce 	json
 // @Param       limit query int false "Размер страницы с пользователями"
-// @Param       offset quey int false "Смещение страницы с ползователями"
+// @Param       offset query int false "Смещение страницы с ползователями"
 // @Success 	200 {object} GetUsersResponse "Успешно вернул пользователя"
 // @Failure 	400 {object} core_http_response.ErrorResponse "Bad request"
 // @Failuer     404 {object} core_http_response.ErrorResponse "User not found"
