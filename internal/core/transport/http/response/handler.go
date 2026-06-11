@@ -70,9 +70,9 @@ func (handler *HTTPResponseHandler) PanicResponse(panic any, msg string) {
 }
 
 func (handler *HTTPResponseHandler) writeResponse(statusCode int, err error, msg string) {
-	response := map[string]string{
-		"message": msg,
-		"error":   err.Error(),
+	response := ErrorResponse{
+		Error:   err.Error(),
+		Message: msg,
 	}
 
 	handler.JSONResponse(response, statusCode)
