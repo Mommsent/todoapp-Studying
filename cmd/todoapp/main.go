@@ -36,7 +36,6 @@ import (
 // @host            127.0.0.1:5050
 // @BasePath        /api/v1
 func main() {
-
 	cfg := core_config.NewConfigMust()
 	time.Local = cfg.TimeZone
 
@@ -54,8 +53,8 @@ func main() {
 	}
 	defer logger.Close()
 
-	logger.Debug("application time zone", zap.Any("zone", time.Local))
-	logger.Debug("Initializing postgres connection pool")
+	logger.Info("application time zone", zap.Any("zone", time.Local))
+	logger.Info("Initializing postgres connection pool")
 
 	pool, err := core_pgx_pool.NewPool(
 		ctx,
@@ -66,27 +65,27 @@ func main() {
 	}
 	defer pool.Close()
 
-	logger.Debug("initializing features", zap.String("feature", "users"))
+	logger.Info("initializing features", zap.String("feature", "users"))
 	usersRepository := users_postgres_repository.NewUsersRepository(pool)
 	usersService := users_service.NewUsersService(usersRepository)
 	usersTransportHTTP := users_transport_http.NewUserHTTPHandler(usersService)
 
-	logger.Debug("initializing features", zap.String("feature", "tasks"))
+	logger.Info("initializing features", zap.String("feature", "tasks"))
 	tasksRepository := tasks_postgres_repository.NewTasksRepository(pool)
 	tasksService := tasks_service.NewTasksService(tasksRepository)
 	tasksTransportHTTP := tasks_transport_http.NewTasksHTTPHandler(tasksService)
 
-	logger.Debug("initializing feature", zap.String("feature", "statistics"))
+	logger.Info("initializing feature", zap.String("feature", "statistics"))
 	statisticsRepository := statistics_postgres_repository.NewStatisticsRepository(pool)
 	statisticsService := statistics_service.NewStatisticsService(statisticsRepository)
 	statisticsTransportHTTP := statistics_transport_http.NewStatisticsHTTPHandler(statisticsService)
 
-	logger.Debug("initializing feature", zap.String("feature", "web"))
+	logger.Info("initializing feature", zap.String("feature", "web"))
 	webRepository := web_fs_repository.NewWebRepository()
 	webService := web_service.NewWebService(webRepository)
 	webTransportHTTP := web_transport_http.NewWebHttpHandler(webService)
 
-	logger.Debug("Initialize HTTP server")
+	logger.Info("Initialize HTTP server")
 	httpConfig := core_http_server.NewConfigMust()
 	httpServer := core_http_server.NewHTTPServer(
 		httpConfig,
