@@ -55,7 +55,7 @@ func (userPatchRequest *PatchUserRequest) Validate() error {
 // @Description 2. **Явно передано значение**: `"phone_number":"+72345234547"` устанавливает новый номер телефона в БД
 // @Description 3. **Передан null**: `"phone_number": null` - очищает поле в БД (set to null)
 // @Description Ограничения: `full_name` не может быть выставлен как null
-// @Tags 		user
+// @Tags 		users
 // @Accept 	    json
 // @Produce 	json
 // @Param       id path int true "ID изменяемого пользователя"
