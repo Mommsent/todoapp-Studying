@@ -600,5 +600,5 @@ paths:
             $ref: '#/definitions/github_com_Mommsent_todoapp-Studying_git_internal_core_transport_http_response.ErrorResponse'
       summary: Изменение пользователя
       tags:
-      - user
+      - users
 swagger: "2.0"
